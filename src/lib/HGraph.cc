@@ -8,23 +8,23 @@
 HGraph::HGraph(std::ifstream &FIn) {
   assert(FIn.is_open());
 
-  int EdgesNo = 0;
-  int VerticesNo = 0;
+  unsigned EdgesNo = 0;
+  unsigned VerticesNo = 0;
   FIn >> EdgesNo >> VerticesNo;
 
   Vertices.resize(VerticesNo);
   Edges.reserve(EdgesNo);
 
-  int CurrentVert{0};
+  unsigned CurrentVert{0};
   std::string Line;
   while (std::getline(FIn, Line)) {
     if (Line.size() < 2)
       continue;
     std::istringstream LineBuff{Line};
-    std::vector<int> EdgesTemp;
+    std::vector<unsigned> EdgesTemp;
     while (LineBuff >> CurrentVert)
       EdgesTemp.push_back(CurrentVert - 1); // Vertex-1 to count from 0 to ..
-    for (int const &Vert : EdgesTemp)
+    for (unsigned const &Vert : EdgesTemp)
       Vertices[Vert].push_back(Edges.size());
     Edges.emplace_back(std::move(EdgesTemp));
   }

@@ -19,4 +19,6 @@ class Partitions {
 public:
   Partitions(HGraph const GraphIn);
   void dump(std::ostream &Out = std::cout) const;
+
+  std::vector<bool> const &getPart() const { return VertPartitions; }
 };

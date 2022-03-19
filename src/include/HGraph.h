@@ -6,7 +6,7 @@
 
 class HGraph {
 
-  using Connections = std::vector<std::vector<int>>;
+  using Connections = std::vector<std::vector<unsigned>>;
 
   Connections Vertices;
   Connections Edges;

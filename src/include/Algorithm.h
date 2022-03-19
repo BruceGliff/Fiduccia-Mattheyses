@@ -1,11 +1,12 @@
 #pragma once
 
+class HGraph;
 class Partitions;
 class GainContainer;
 
 namespace Alg {
 
-void FM(Partitions &Prt);
-void FMPass(GainContainer &GC, Partitions &Prt);
+void FM(HGraph const &, Partitions &);
+void FMPass(GainContainer &, Partitions &);
 
 } // namespace Alg
