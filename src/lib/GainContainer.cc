@@ -28,10 +28,51 @@ GainContainer::GainContainer(HGraph const &HG, Partitions const &Prt) {
         --CurrentGain;
     }
 
-    if (!CurrentPart)
-      Left[CurrentGain].insert(i);
-    else
-      Right[CurrentGain].insert(i);
+    auto &SizeToUpd = getNeededSide(CurrentPart);
+    SizeToUpd[CurrentGain].insert(i);
     VertGain[i] = CurrentGain;
   }
 }
+
+GainContainer::RLSide &GainContainer::getNeededSide(bool Side) {
+  return Side ? Right : Left;
+}
+GainContainer::RLSide const &GainContainer::getNeededSide(bool Side) const {
+  return Side ? Right : Left;
+}
+
+bool GainContainer::isEmpty(bool Side) const {
+  auto const &SizeToUpd = getNeededSide(Side);
+  return SizeToUpd.empty();
+}
+
+GainContainer::Move GainContainer::bestFeasibleMove(bool Side) {
+  auto &SizeToUpd = getNeededSide(Side);
+
+  auto &&[Gain, Vertices] = *SizeToUpd.rbegin();
+  unsigned Vertex = *Vertices.begin();
+  Vertices.erase(Vertex);
+
+  if (Vertices.empty())
+    SizeToUpd.erase(Gain);
+
+  return std::make_pair(Vertex, Gain);
+}
+
+void GainContainer::update(unsigned Vertex, bool Side, int Value) {
+  if (IsDeleted.count(Vertex))
+    return;
+  erase(Vertex, Side);
+  auto &SizeToUpd = getNeededSide(Side);
+  SizeToUpd[VertGain[Vertex]].insert(Vertex);
+}
+
+void GainContainer::erase(unsigned Vertex, bool Side) {
+  auto &SizeToUpd = getNeededSide(Side);
+  int const Gain = VertGain.at(Vertex);
+  SizeToUpd[Gain].erase(Vertex);
+  if (SizeToUpd[Gain].empty())
+    SizeToUpd.erase(Gain);
+}
+
+void GainContainer::updateDeleted(unsigned Vertex) { IsDeleted.insert(Vertex); }

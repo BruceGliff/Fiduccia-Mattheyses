@@ -23,8 +23,13 @@ Partitions::Partitions(HGraph const GraphIn) : Graph{GraphIn} {
   for (unsigned i = Size / 2 + 1; i != Size; ++i)
     VertPartitions[i] = true;
 
-  Balance = Size % 2;
+  Side = Size % 2;
   calculateCost();
+}
+
+void Partitions::update(unsigned Vertex) {
+  VertPartitions.at(Vertex) = !VertPartitions.at(Vertex);
+  Side = !Side;
 }
 
 void Partitions::dump(std::ostream &Out) const {
