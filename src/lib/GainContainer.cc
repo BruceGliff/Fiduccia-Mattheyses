@@ -1,5 +1,7 @@
 #include "GainContainer.h"
 
+#include "Logger.h"
+
 #include "HGraph.h"
 #include "Partitions.h"
 
@@ -63,6 +65,7 @@ void GainContainer::update(unsigned Vertex, bool Side, int Value) {
   if (IsDeleted.count(Vertex))
     return;
   erase(Vertex, Side);
+  VertGain[Vertex] += Value;
   auto &SizeToUpd = getNeededSide(Side);
   SizeToUpd[VertGain[Vertex]].insert(Vertex);
 }
@@ -76,3 +79,20 @@ void GainContainer::erase(unsigned Vertex, bool Side) {
 }
 
 void GainContainer::updateDeleted(unsigned Vertex) { IsDeleted.insert(Vertex); }
+
+void GainContainer::dump(std::ostream &Out) const {
+  Out << "Left\n";
+  for (auto &&Item : Left) {
+    Out << Item.first << ": ";
+    for (auto Vert : Item.second)
+      Out << Vert << ' ';
+    Out << '\n';
+  }
+  Out << "Right\n";
+  for (auto &&Item : Right) {
+    Out << Item.first << ": ";
+    for (auto Vert : Item.second)
+      Out << Vert << ' ';
+    Out << '\n';
+  }
+}

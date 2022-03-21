@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <map>
 #include <set>
 #include <vector>
@@ -28,4 +29,6 @@ public:
   void update(unsigned Vertex, bool Side, int Value);
   void erase(unsigned Vertex, bool Side);
   void updateDeleted(unsigned Vertex);
+
+  void dump(std::ostream &Out = std::cout) const;
 };

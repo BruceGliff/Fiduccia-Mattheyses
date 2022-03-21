@@ -1,5 +1,7 @@
 #include "Algorithm.h"
 
+#include "Logger.h"
+
 #include "GainContainer.h"
 #include "Partitions.h"
 
@@ -30,13 +32,11 @@ int FMPass(GainContainer &GC, Partitions &Prt, HGraph const &HG) {
 
   while (!GC.isEmpty(Prt.getSide())) {
     auto [Vertex, Gain] = GC.bestFeasibleMove(Prt.getSide());
-
     VertToChange.insert(Vertex);
     Cost -= Gain;
     if (Cost < BestCost) {
       BestCost = Cost;
-      VertToChange.erase(VertToChange.begin(),
-                         VertToChange.end()); // TODO why do not clean?
+      VertToChange.clear();
     }
     applyMove(GC, Prt, HG, Vertex);
   }
@@ -58,18 +58,9 @@ void applyMove(GainContainer &GC, Partitions &Prt, HGraph const &HG,
     int CountInSrc = 0;
     unsigned VertSrc = 0;
 
-    // TODO these ifs could be rewritten.
     for (auto Vertex : HG.getEdges().at(Edge)) {
-      if (Prt.getSide()) {
-        if (!Prt.getPart().at(Vertex)) {
-          IsNoVInDst = false;
-          ++CountInDst;
-          VertDst = Vertex;
-        } else if (Vertex != MoveVertex) {
-          ++CountInSrc;
-          VertSrc = Vertex;
-        }
-      } else if (Prt.getPart().at(Vertex)) {
+      if ((Prt.getSide() && !Prt.getPart().at(Vertex)) ||
+          (!Prt.getSide() && Prt.getPart().at(Vertex))) {
         IsNoVInDst = false;
         ++CountInDst;
         VertDst = Vertex;
@@ -83,6 +74,7 @@ void applyMove(GainContainer &GC, Partitions &Prt, HGraph const &HG,
     }
 
     int const UpdateVal = IsNoVInDst ? 1 : IsOneVInSrc ? -1 : 0;
+
     if (UpdateVal)
       for (auto Vertex : HG.getEdges().at(Edge))
         GC.update(Vertex, Prt.getPart().at(Vertex), UpdateVal);
@@ -90,7 +82,7 @@ void applyMove(GainContainer &GC, Partitions &Prt, HGraph const &HG,
     if (CountInSrc == 1)
       GC.update(VertSrc, Prt.getPart().at(VertSrc), 1);
     if (CountInDst == 1)
-      GC.update(VertDst, Prt.getPart().at(CountInDst), -1);
+      GC.update(VertDst, Prt.getPart().at(VertDst), -1);
   }
 
   GC.erase(MoveVertex, Prt.getPart().at(MoveVertex));

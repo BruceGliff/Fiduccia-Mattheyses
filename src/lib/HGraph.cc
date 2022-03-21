@@ -1,5 +1,7 @@
 #include "HGraph.h"
 
+#include "Logger.h"
+
 #include <cassert>
 
 #include <sstream>

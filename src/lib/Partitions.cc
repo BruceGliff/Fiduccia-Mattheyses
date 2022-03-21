@@ -1,5 +1,7 @@
 #include "Partitions.h"
 
+#include "Logger.h"
+
 #include <algorithm>
 
 void Partitions::calculateCost() {

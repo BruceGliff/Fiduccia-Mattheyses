@@ -6,8 +6,6 @@
 #include <vector>
 
 class Partitions {
-
-  // TODO Why wont use set?
   std::vector<bool> VertPartitions;
   HGraph const &Graph;
 
