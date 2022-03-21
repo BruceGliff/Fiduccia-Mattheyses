@@ -4,8 +4,10 @@
 #include "HGraph.h"
 #include "Partitions.h"
 
-int main(int argc, char *argv[]) {
+#include <chrono>
 
+int main(int argc, char *argv[]) {
+  using namespace std::literals;
   if (argc == 1) {
     log().setOnce(std::cerr) << "No input file" << '\n';
     return -1;
@@ -26,7 +28,10 @@ int main(int argc, char *argv[]) {
   HGraph Graph{File};
   Partitions Prt{Graph};
 
+  auto const Start = std::chrono::steady_clock::now();
   Alg::FM(Graph, Prt);
+  auto const End = std::chrono::steady_clock::now();
+  log() << "Time: " << (End - Start) / 1ms << "ms\n";
 
   Prt.dump(log().setOnce(OutFile));
 
