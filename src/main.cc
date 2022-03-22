@@ -35,6 +35,7 @@ int main(int argc, char *argv[]) {
   auto const End = std::chrono::steady_clock::now();
   log() << Prt.getCost() << ' ' << (End - Start) / 1ms << ' ' << Iterations
         << '\n';
+  log().flush();
 
   Prt.dump(log().setOnce(OutFile));
 

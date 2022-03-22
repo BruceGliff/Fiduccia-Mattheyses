@@ -20,6 +20,11 @@ Logger &Logger::set(std::ostream &OutIn) {
   return *this;
 }
 
+Logger &Logger::flush() {
+  Out->flush();
+  return *this;
+}
+
 std::ostream &Logger::setOnce(std::ostream &OutIn) const { return OutIn; }
 
 Logger &log() { return Log; }

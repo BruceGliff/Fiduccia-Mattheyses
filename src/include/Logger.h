@@ -13,6 +13,8 @@ public:
   Logger &set(std::ostream &OutIn);
   std::ostream &setOnce(std::ostream &OutIn) const;
 
+  Logger &flush();
+
   template <typename T> Logger &operator<<(T &&V) {
     *Out << V;
     return *this;
