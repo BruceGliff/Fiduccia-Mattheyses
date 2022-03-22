@@ -11,8 +11,10 @@ static void applyMove(GainContainer &GC, Partitions &Prt, HGraph const &HG,
 
 namespace Alg {
 
-void FM(HGraph const &HG, Partitions &Prt) {
+unsigned FM(HGraph const &HG, Partitions &Prt) {
+  unsigned Iteration = 0;
   while (1) {
+    ++Iteration;
     GainContainer GC{HG, Prt};
     int const Best = FMPass(GC, Prt, HG);
     if (Best == Prt.getCost())
@@ -20,6 +22,7 @@ void FM(HGraph const &HG, Partitions &Prt) {
 
     Prt.setCost(Best);
   }
+  return Iteration;
 }
 
 } // namespace Alg

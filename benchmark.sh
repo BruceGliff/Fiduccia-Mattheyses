@@ -1,7 +1,7 @@
 #!/bin/bash
 
+echo "File Edges Vertices Cut Time Iterations"
 for file in ./benchmark/*.hgr
 do
-  echo $file
   ./Initial $file
 done

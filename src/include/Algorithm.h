@@ -6,6 +6,6 @@ class GainContainer;
 
 namespace Alg {
 
-void FM(HGraph const &, Partitions &);
+unsigned FM(HGraph const &, Partitions &);
 
 } // namespace Alg
