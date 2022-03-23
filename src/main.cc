@@ -14,9 +14,9 @@ int main(int argc, char *argv[]) {
     log().setOnce(std::cerr) << "No input file" << '\n';
     return -1;
   }
-  bool const IsModified =
-      std::string{argv[1]}.compare("-m") == 0 ? true : false;
-  int const FileIdx = IsModified ? 2 : 1;
+  std::string const Arg{argv[1]};
+  bool const IsModified = Arg.compare("-m") == 0 ? true : false;
+  int const FileIdx = IsModified ? 2 : Arg.size() == 0 ? 2 : 1;
   if (argc < FileIdx + 1) {
     log().setOnce(std::cerr) << "No input file" << '\n';
     return -1;
