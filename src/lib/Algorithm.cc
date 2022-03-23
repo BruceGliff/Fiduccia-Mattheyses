@@ -31,11 +31,12 @@ int FMPass(GainContainer &GC, Partitions &Prt, HGraph const &HG) {
   int Cost = Prt.getCost();
   int BestCost = Cost;
 
-  std::set<unsigned> VertToChange;
+  std::vector<unsigned> VertToChange;
 
   while (!GC.isEmpty(Prt.getSide())) {
     auto [Vertex, Gain] = GC.bestFeasibleMove(Prt.getSide());
-    VertToChange.insert(Vertex);
+    // WAS insert
+    VertToChange.push_back(Vertex);
     Cost -= Gain;
     if (Cost < BestCost) {
       BestCost = Cost;
@@ -46,6 +47,7 @@ int FMPass(GainContainer &GC, Partitions &Prt, HGraph const &HG) {
 
   for (auto Vertex : VertToChange)
     Prt.update(Vertex);
+
   return BestCost;
 }
 
@@ -80,15 +82,23 @@ void applyMove(GainContainer &GC, Partitions &Prt, HGraph const &HG,
 
     if (UpdateVal)
       for (auto Vertex : HG.getEdges().at(Edge))
-        GC.update(Vertex, Prt.getPart().at(Vertex), UpdateVal);
+        GC.getDeltas().at(Vertex) += UpdateVal;
 
     if (CountInSrc == 1)
-      GC.update(VertSrc, Prt.getPart().at(VertSrc), 1);
+      ++GC.getDeltas().at(VertSrc);
     if (CountInDst == 1)
-      GC.update(VertDst, Prt.getPart().at(VertDst), -1);
+      --GC.getDeltas().at(VertDst);
   }
 
   GC.erase(MoveVertex, Prt.getPart().at(MoveVertex));
   GC.updateDeleted(MoveVertex);
+
+  for (unsigned Edge : HG.getVertices().at(MoveVertex))
+    for (unsigned Vertex : HG.getEdges().at(Edge))
+      if (GC.getDeltas().at(Vertex)) {
+        GC.update(Vertex, Prt.getPart().at(Vertex), GC.getDeltas().at(Vertex));
+        GC.getDeltas().at(Vertex) = 0;
+      }
+
   Prt.update(MoveVertex);
 }

@@ -17,4 +17,4 @@ add_custom_command(	TARGET ${PROJECT_NAME} POST_BUILD
 					${CMAKE_SOURCE_DIR}/benchmark/ ${OUT_DIR}/benchmark/)
 add_custom_command(	TARGET ${PROJECT_NAME} POST_BUILD
 					COMMAND ${CMAKE_COMMAND} -E copy
-					${CMAKE_SOURCE_DIR}/benchmark.sh ${OUT_DIR}/)
+					${CMAKE_SOURCE_DIR}/benchmark.py ${OUT_DIR}/)

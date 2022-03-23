@@ -14,7 +14,7 @@ class HGraph {
 public:
   HGraph(std::ifstream &FIn);
 
-  void dump(std::ostream &Out = std::cout);
+  void dump(std::ostream &Out = std::cout) const;
 
   Connections const &getVertices() const { return Vertices; }
   Connections const &getEdges() const { return Edges; }

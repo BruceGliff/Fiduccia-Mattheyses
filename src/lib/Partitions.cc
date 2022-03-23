@@ -5,24 +5,28 @@
 #include <algorithm>
 
 void Partitions::calculateCost() {
+  unsigned Skip = 0;
   for (auto &&EdgesVec : Graph.getEdges()) {
+    if (!Skip++)
+      continue;
     bool const CurrentPartition = VertPartitions[EdgesVec[0]];
-    bool const Inc = std::any_of(
-        EdgesVec.begin(), EdgesVec.end(), [&CurrentPartition, this](int Edge) {
-          return VertPartitions[Edge] != CurrentPartition;
-        });
+    bool const Inc =
+        std::any_of(EdgesVec.begin() + 1, EdgesVec.end(),
+                    [&CurrentPartition, this](int Edge) {
+                      return VertPartitions[Edge] != CurrentPartition;
+                    });
     if (Inc)
       ++Cost;
   }
 }
 
 Partitions::Partitions(HGraph const GraphIn) : Graph{GraphIn} {
-  unsigned const Size = Graph.getVertices().size();
-  VertPartitions.resize(Size);
+  unsigned const Size = Graph.getVertices().size() - 1;
+  VertPartitions.resize(Size + 1);
   // TODO remake static partition initialization,
-  for (unsigned i = 0; i <= Size / 2; ++i)
+  for (unsigned i = 1; i <= Size / 2; ++i)
     VertPartitions[i] = false;
-  for (unsigned i = Size / 2 + 1; i != Size; ++i)
+  for (unsigned i = Size / 2 + 1; i <= Size; ++i)
     VertPartitions[i] = true;
 
   Side = Size % 2;
@@ -37,11 +41,11 @@ void Partitions::update(unsigned Vertex) {
 void Partitions::dump(std::ostream &Out) const {
   Out << "Left: ";
   unsigned const Size = VertPartitions.size();
-  for (unsigned i = 0; i != Size; ++i)
+  for (unsigned i = 1; i != Size; ++i)
     if (!VertPartitions[i])
       Out << i << " ";
   Out << "\nRight: ";
-  for (unsigned i = 0; i != Size; ++i)
+  for (unsigned i = 1; i != Size; ++i)
     if (VertPartitions[i])
       Out << i << " ";
   Out << "\nSolution cost: " << Cost << '\n';

@@ -21,20 +21,19 @@ int main(int argc, char *argv[]) {
   }
 
   std::string const InFile{argv[FileIdx]};
-  log() << InFile << ' ';
 
   std::ifstream File{InFile};
   std::ofstream OutFile{InFile + ".part.2"};
 
   HGraph Graph{File};
-  log() << Graph.getEdges().size() << ' ' << Graph.getVertices().size() << ' ';
   Partitions Prt{Graph};
 
   auto const Start = std::chrono::steady_clock::now();
   unsigned const Iterations = Alg::FM(Graph, Prt);
   auto const End = std::chrono::steady_clock::now();
-  log() << Prt.getCost() << ' ' << (End - Start) / 1ms << ' ' << Iterations
-        << '\n';
+  log() << InFile << ' ' << Graph.getEdges().size() << ' '
+        << Graph.getVertices().size() << ' ' << Prt.getCost() << ' '
+        << (End - Start) / 1ms << ' ' << Iterations << '\n';
   log().flush();
 
   Prt.dump(log().setOnce(OutFile));

@@ -8,31 +8,40 @@
 GainContainer::GainContainer(HGraph const &HG, Partitions const &Prt) {
   unsigned const VertSize = Prt.getPart().size();
   VertGain.resize(VertSize);
+  IsDeleted.resize(VertSize);
+  Deltas.resize(VertSize);
+  Iterators.resize(VertSize);
 
-  for (unsigned i = 0; i != VertSize; ++i) {
-    int CurrentGain = 0;
-    bool CurrentPart = Prt.getPart().at(i);
-
-    for (unsigned EdgeId : HG.getVertices().at(i)) {
-      bool IsAlone = true;
-      bool IsEntirely = true;
-
-      for (unsigned VertId : HG.getEdges().at(EdgeId)) {
-        if (CurrentPart != Prt.getPart().at(VertId))
-          IsEntirely = false;
-        if (CurrentPart == Prt.getPart().at(VertId) && VertId != i)
-          IsAlone = false;
+  unsigned SkipFirst = 0;
+  for (auto &&VecEdges : HG.getEdges()) {
+    if (!SkipFirst++)
+      continue;
+    int VLeft = 0, VRight = 0;
+    unsigned VLeftId = 0, VRightId = 0;
+    for (unsigned Vertex : VecEdges)
+      if (!Prt.getPart().at(Vertex)) {
+        VLeft++;
+        VLeftId = Vertex;
+      } else {
+        VRight++;
+        VRightId = Vertex;
       }
 
-      if (IsAlone)
-        ++CurrentGain;
-      if (IsEntirely)
-        --CurrentGain;
-    }
+    if ((VRight == 0 && VLeft != 1) || (VLeft == 0 && VRight != 1))
+      for (unsigned Vertex : VecEdges)
+        --VertGain[Vertex];
 
-    auto &SizeToUpd = getNeededSide(CurrentPart);
-    SizeToUpd[CurrentGain].insert(i);
-    VertGain[i] = CurrentGain;
+    if (VLeft == 1 && VRight != 0)
+      ++VertGain[VLeftId];
+    if (VRight == 1 && VLeft != 0)
+      ++VertGain[VRightId];
+  }
+
+  for (unsigned i = 1; i != Prt.getPart().size(); ++i) {
+    auto &&Side = getNeededSide(Prt.getPart().at(i));
+    auto &Item = Side[VertGain[i]];
+    Item.push_front(i);
+    Iterators[i] = Item.begin();
   }
 }
 
@@ -53,8 +62,8 @@ GainContainer::Move GainContainer::bestFeasibleMove(bool Side) {
 
   auto &&[Gain, Vertices] = *SizeToUpd.rbegin();
   unsigned Vertex = *Vertices.begin();
-  Vertices.erase(Vertex);
-
+  Vertices.pop_front();
+  IsDeleted[Vertex] = true;
   if (Vertices.empty())
     SizeToUpd.erase(Gain);
 
@@ -62,23 +71,29 @@ GainContainer::Move GainContainer::bestFeasibleMove(bool Side) {
 }
 
 void GainContainer::update(unsigned Vertex, bool Side, int Value) {
-  if (IsDeleted.count(Vertex))
+  if (IsDeleted[Vertex])
     return;
   erase(Vertex, Side);
   VertGain[Vertex] += Value;
   auto &SizeToUpd = getNeededSide(Side);
-  SizeToUpd[VertGain[Vertex]].insert(Vertex);
+  SizeToUpd[VertGain[Vertex]].push_front(Vertex);
+  Iterators[Vertex] = SizeToUpd[VertGain[Vertex]].begin();
 }
 
 void GainContainer::erase(unsigned Vertex, bool Side) {
+  if (IsDeleted[Vertex])
+    return;
   auto &SizeToUpd = getNeededSide(Side);
   int const Gain = VertGain.at(Vertex);
-  SizeToUpd[Gain].erase(Vertex);
+  SizeToUpd[Gain].erase(Iterators[Vertex]);
   if (SizeToUpd[Gain].empty())
     SizeToUpd.erase(Gain);
 }
 
-void GainContainer::updateDeleted(unsigned Vertex) { IsDeleted.insert(Vertex); }
+void GainContainer::updateDeleted(unsigned Vertex) { IsDeleted[Vertex] = true; }
+
+std::vector<int> const &GainContainer::getDeltas() const { return Deltas; }
+std::vector<int> &GainContainer::getDeltas() { return Deltas; }
 
 void GainContainer::dump(std::ostream &Out) const {
   Out << "Left\n";
