@@ -1,6 +1,8 @@
 #include "Logger.h"
 
 #include "Algorithm.h"
+#include "AlgorithmMod.h"
+
 #include "HGraph.h"
 #include "Partitions.h"
 
@@ -29,7 +31,8 @@ int main(int argc, char *argv[]) {
   Partitions Prt{Graph};
 
   auto const Start = std::chrono::steady_clock::now();
-  unsigned const Iterations = Alg::FM(Graph, Prt);
+  unsigned const Iterations =
+      IsModified ? AlgMod::FM(Graph, Prt) : Alg::FM(Graph, Prt);
   auto const End = std::chrono::steady_clock::now();
   log() << InFile << ' ' << Graph.getEdges().size() << ' '
         << Graph.getVertices().size() << ' ' << Prt.getCost() << ' '

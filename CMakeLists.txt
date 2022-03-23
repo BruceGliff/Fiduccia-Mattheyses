@@ -12,6 +12,10 @@ target_compile_options(${PROJECT_NAME} PRIVATE -Wall -O3)
 set(OUT_DIR ${CMAKE_BINARY_DIR}/bin/)
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${OUT_DIR})
 
+add_subdirectory(src/lib)
+target_link_libraries(${PROJECT_NAME} modified)
+target_link_libraries(${PROJECT_NAME} original)
+
 add_custom_command(	TARGET ${PROJECT_NAME} POST_BUILD
 					COMMAND ${CMAKE_COMMAND} -E copy_directory
 					${CMAKE_SOURCE_DIR}/benchmark/ ${OUT_DIR}/benchmark/)

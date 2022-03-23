@@ -41,11 +41,11 @@ void Partitions::update(unsigned Vertex) {
 void Partitions::dump(std::ostream &Out) const {
   Out << "Left: ";
   unsigned const Size = VertPartitions.size();
-  for (unsigned i = 1; i != Size; ++i)
+  for (unsigned i = 0; i != Size; ++i)
     if (!VertPartitions[i])
       Out << i << " ";
   Out << "\nRight: ";
-  for (unsigned i = 1; i != Size; ++i)
+  for (unsigned i = 0; i != Size; ++i)
     if (VertPartitions[i])
       Out << i << " ";
   Out << "\nSolution cost: " << Cost << '\n';

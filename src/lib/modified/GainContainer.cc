@@ -5,6 +5,8 @@
 #include "HGraph.h"
 #include "Partitions.h"
 
+using namespace AlgMod;
+
 GainContainer::GainContainer(HGraph const &HG, Partitions const &Prt) {
   unsigned const VertSize = Prt.getPart().size();
   VertGain.resize(VertSize);
