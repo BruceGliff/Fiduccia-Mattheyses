@@ -4,7 +4,7 @@ project(${PJ_NAME})
 file(GLOB_RECURSE SRC_FILES *.cc *.h)
 
 add_library(${PJ_NAME} ${SRC_FILES})
-target_compile_options(${PJ_NAME} PRIVATE -Wall -O3)
+target_compile_options(${PJ_NAME} PRIVATE  -O3)
 
 
 target_include_directories(${PJ_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
