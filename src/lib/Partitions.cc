@@ -50,3 +50,8 @@ void Partitions::dump(std::ostream &Out) const {
       Out << i << " ";
   Out << "\nSolution cost: " << Cost << '\n';
 }
+
+void Partitions::out(std::ostream &Out) const {
+  for (auto &&Part : VertPartitions)
+    Out << Part << '\n';
+}

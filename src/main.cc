@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
         << (End - Start) / 1ms << ' ' << Iterations << '\n';
   log().flush();
 
-  Prt.dump(log().setOnce(OutFile));
+  Prt.out(log().setOnce(OutFile));
 
   return 0;
 }

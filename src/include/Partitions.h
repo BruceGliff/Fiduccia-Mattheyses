@@ -17,6 +17,7 @@ class Partitions {
 public:
   Partitions(HGraph const GraphIn);
   void dump(std::ostream &Out = std::cout) const;
+  void out(std::ostream &Out = std::cout) const;
   int getCost() const { return Cost; }
   void setCost(int CostIn) { Cost = CostIn; }
   bool getSide() const { return Side; }
