@@ -54,13 +54,17 @@ GainContainer::RLSide const &GainContainer::getNeededSide(bool Side) const {
   return Side ? Right : Left;
 }
 
-bool GainContainer::isEmpty(bool Side) const {
-  auto const &SizeToUpd = getNeededSide(Side);
-  return SizeToUpd.empty();
+bool GainContainer::isEmpty() const {
+  return Left.empty() || Right.empty();
 }
 
-GainContainer::Move GainContainer::bestFeasibleMove(bool Side) {
-  auto &SizeToUpd = getNeededSide(Side);
+GainContainer::Move GainContainer::bestFeasibleMove(int Displacement) {
+
+  const int GainR = Right.rbegin()->first;
+  const int GainL = Left.rbegin()->first;
+  const bool IsSideR = GainL < GainR || Displacement >= 0;
+
+  auto &SizeToUpd = getNeededSide(IsSideR);
 
   auto &&[Gain, Vertices] = *SizeToUpd.rbegin();
   unsigned Vertex = *Vertices.begin();
@@ -112,4 +116,8 @@ void GainContainer::dump(std::ostream &Out) const {
       Out << Vert << ' ';
     Out << '\n';
   }
+  Out << "Deltas:\n";
+  for (auto x : Deltas)
+    Out << x << ' ';
+  Out << "\n";
 }

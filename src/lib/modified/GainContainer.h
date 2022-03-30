@@ -28,8 +28,8 @@ class GainContainer {
 
 public:
   GainContainer(HGraph const &HG, Partitions const &Prt);
-  bool isEmpty(bool Check) const;
-  Move bestFeasibleMove(bool Side);
+  bool isEmpty() const;
+  Move bestFeasibleMove(int Displacement);
   void update(unsigned Vertex, bool Side, int Value);
   void erase(unsigned Vertex, bool Side);
   void updateDeleted(unsigned Vertex);

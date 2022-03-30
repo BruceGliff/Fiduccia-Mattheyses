@@ -34,8 +34,9 @@ Partitions::Partitions(HGraph const GraphIn) : Graph{GraphIn} {
 }
 
 void Partitions::update(unsigned Vertex) {
+  int const Inc = VertPartitions.at(Vertex) ? -1 : 1;
+  Side += Inc;
   VertPartitions.at(Vertex) = !VertPartitions.at(Vertex);
-  Side = !Side;
 }
 
 void Partitions::dump(std::ostream &Out) const {

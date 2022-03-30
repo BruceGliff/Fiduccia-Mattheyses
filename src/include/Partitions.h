@@ -10,7 +10,7 @@ class Partitions {
   HGraph const &Graph;
 
   int Cost{0};
-  bool Side;
+  int Side{0};
 
   void calculateCost();
 
@@ -20,7 +20,7 @@ public:
   void out(std::ostream &Out = std::cout) const;
   int getCost() const { return Cost; }
   void setCost(int CostIn) { Cost = CostIn; }
-  bool getSide() const { return Side; }
+  int getSide() const { return Side; }
   void update(unsigned Vertex);
 
   std::vector<bool> const &getPart() const { return VertPartitions; }

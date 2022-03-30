@@ -9,7 +9,7 @@ using namespace AlgMod;
 
 static int FMPass(GainContainer &GC, Partitions &Prt, HGraph const &HG);
 static void applyMove(GainContainer &GC, Partitions &Prt, HGraph const &HG,
-                      unsigned MoveVertex);
+                      unsigned MoveVertex, unsigned it);
 
 namespace AlgMod {
 
@@ -35,7 +35,8 @@ int FMPass(GainContainer &GC, Partitions &Prt, HGraph const &HG) {
 
   std::vector<unsigned> VertToChange;
 
-  while (!GC.isEmpty(Prt.getSide())) {
+  unsigned it = 0;
+  while (!GC.isEmpty()) {
     auto [Vertex, Gain] = GC.bestFeasibleMove(Prt.getSide());
     VertToChange.push_back(Vertex);
     Cost -= Gain;
@@ -43,7 +44,7 @@ int FMPass(GainContainer &GC, Partitions &Prt, HGraph const &HG) {
       BestCost = Cost;
       VertToChange.clear();
     }
-    applyMove(GC, Prt, HG, Vertex);
+    applyMove(GC, Prt, HG, Vertex, it);
   }
 
   for (auto Vertex : VertToChange)
@@ -53,7 +54,7 @@ int FMPass(GainContainer &GC, Partitions &Prt, HGraph const &HG) {
 }
 
 void applyMove(GainContainer &GC, Partitions &Prt, HGraph const &HG,
-               unsigned MoveVertex) {
+               unsigned MoveVertex, unsigned it) {
   for (auto Edge : HG.getVertices().at(MoveVertex)) {
     bool IsNoVInDst = true;
     bool IsOneVInSrc = true;
@@ -65,17 +66,27 @@ void applyMove(GainContainer &GC, Partitions &Prt, HGraph const &HG,
     unsigned VertSrc = 0;
 
     for (auto Vertex : HG.getEdges().at(Edge)) {
-      if ((Prt.getSide() && !Prt.getPart().at(Vertex)) ||
-          (!Prt.getSide() && Prt.getPart().at(Vertex))) {
-        IsNoVInDst = false;
-        ++CountInDst;
-        VertDst = Vertex;
-      } else if (Vertex != MoveVertex) {
-        ++CountInSrc;
-        VertSrc = Vertex;
+      if (Prt.getPart().at(MoveVertex)) {
+        if (!Prt.getPart().at(Vertex)) {
+          IsNoVInDst = false;
+          CountInDst++;
+          VertDst = Vertex;
+        } else if (Vertex != MoveVertex) {
+          CountInSrc++;
+          VertSrc = Vertex;
+        }
+      } else {
+        if (Prt.getPart().at(Vertex)) {
+          IsNoVInDst = false;
+          CountInDst++;
+          VertDst = Vertex;
+        } else if (Vertex != MoveVertex) {
+          CountInSrc++;
+          VertSrc = Vertex;
+        }
       }
-      if (Prt.getPart().at(MoveVertex) == Prt.getPart().at(Vertex) &&
-          Vertex != MoveVertex)
+
+      if (Prt.getPart().at(MoveVertex) == Prt.getPart().at(Vertex) && Vertex != MoveVertex)
         IsOneVInSrc = false;
     }
 
@@ -102,4 +113,5 @@ void applyMove(GainContainer &GC, Partitions &Prt, HGraph const &HG,
       }
 
   Prt.update(MoveVertex);
+
 }
